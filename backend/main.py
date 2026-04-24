@@ -378,3 +378,51 @@ def delete_summary(
         )
     db.delete(record)
     db.commit()
+
+
+@app.get(
+    "/api/dashboard",
+    summary="Dashboard stats: totals, averages, top categories, recent summaries",
+)
+def get_dashboard(db: Session = Depends(get_db)):
+    """
+    Returns aggregate metrics for the manager dashboard:
+    - total_summaries: total number of call summaries stored
+    - avg_quality: mean quality_score across all scored calls (null if none)
+    - top_categories: list of {category, count} sorted by count descending
+    - recent_summaries: the 10 most recent summary records
+    """
+    from sqlalchemy import func
+
+    total_summaries: int = db.query(func.count(CallSummary.id)).scalar() or 0
+
+    avg_quality_raw = (
+        db.query(func.avg(CallSummary.quality_score))
+        .filter(CallSummary.quality_score.isnot(None))
+        .scalar()
+    )
+    avg_quality = round(float(avg_quality_raw), 2) if avg_quality_raw is not None else None
+
+    category_rows = (
+        db.query(CallSummary.category, func.count(CallSummary.id).label("count"))
+        .group_by(CallSummary.category)
+        .order_by(desc("count"))
+        .limit(10)
+        .all()
+    )
+    top_categories = [{"category": row.category, "count": row.count} for row in category_rows]
+
+    recent_records = (
+        db.query(CallSummary)
+        .order_by(desc(CallSummary.created_at))
+        .limit(10)
+        .all()
+    )
+    recent_summaries = [SummaryRecord(**r.to_dict()) for r in recent_records]
+
+    return {
+        "total_summaries": total_summaries,
+        "avg_quality": avg_quality,
+        "top_categories": top_categories,
+        "recent_summaries": recent_summaries,
+    }

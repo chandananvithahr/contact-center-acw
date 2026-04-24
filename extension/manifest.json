@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "ACW Assistant — Auto Call Summary",
+  "short_name": "ACW Assistant",
   "version": "1.0.0",
-  "description": "Automatically generates call summaries after each customer call, reducing after-call work from 6 minutes to 30 seconds.",
+  "description": "AI call summaries for contact centers. Reduces after-call work from 6 minutes to 30 seconds automatically.",
+  "homepage_url": "https://chandananvithahr.github.io/contact-center-acw/",
   "permissions": [
     "activeTab",
     "storage",

@@ -101,16 +101,16 @@ async function handleToggleChange(event) {
 }
 
 /**
- * Opens the dashboard page in a new tab.
+ * Opens the extension dashboard page in a new tab.
  */
 async function handleViewAll(event) {
   event.preventDefault();
-  await chrome.tabs.create({ url: `${BACKEND_URL}/dashboard` });
+  await chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html") });
   window.close();
 }
 
 /**
- * Opens the settings page in a new tab.
+ * Opens the settings page in a new tab (backend settings).
  */
 async function handleSettings(event) {
   event.preventDefault();
