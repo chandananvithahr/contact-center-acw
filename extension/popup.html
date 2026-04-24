@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACW Assistant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+
+    .header {
+      background: #1e293b;
+      padding: 16px 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .header-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    .content {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot.connected {
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e80;
+    }
+
+    .status-dot.disconnected {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef444480;
+    }
+
+    .status-badge.connected {
+      color: #22c55e;
+    }
+
+    .status-badge.disconnected {
+      color: #ef4444;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .toggle-description {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #334155;
+      border-radius: 22px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: #94a3b8;
+      border-radius: 50%;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: #3b82f6;
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+      background: #ffffff;
+    }
+
+    .summary-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .summary-preview {
+      padding: 10px 14px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+      min-height: 54px;
+    }
+
+    .summary-preview.has-content {
+      color: #cbd5e1;
+    }
+
+    .summary-meta {
+      font-size: 10px;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      padding-top: 4px;
+    }
+
+    .action-link {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .action-link:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #1e293b;
+    }
+
+    .action-link.primary {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-color: transparent;
+      color: #ffffff;
+    }
+
+    .action-link.primary:hover {
+      opacity: 0.9;
+      color: #ffffff;
+    }
+
+    .footer {
+      padding: 10px 20px;
+      border-top: 1px solid #1e293b;
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-icon">&#9889;</div>
+    <div>
+      <div class="header-title">ACW Assistant</div>
+      <div class="header-subtitle">Auto Call Summary</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="status-row">
+      <span class="status-label">Backend Status</span>
+      <div class="status-badge disconnected" id="statusBadge">
+        <div class="status-dot disconnected" id="statusDot"></div>
+        <span id="statusText">Checking...</span>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-label">Auto-summarize after calls</div>
+        <div class="toggle-description">Generates summary when call ends</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="autoSummarizeToggle" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="summary-section">
+      <div class="section-title">Last Summary</div>
+      <div class="summary-preview" id="summaryPreview">
+        No summaries yet. Enable auto-summarize and finish a call to see your first summary.
+      </div>
+      <div class="summary-meta" id="summaryMeta"></div>
+    </div>
+
+    <div class="actions">
+      <a class="action-link primary" id="viewAllLink" href="#">View All Summaries</a>
+      <a class="action-link" id="settingsLink" href="#">Settings</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">ACW Assistant v1.0 &mdash; Reduce after-call work by 80%</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
